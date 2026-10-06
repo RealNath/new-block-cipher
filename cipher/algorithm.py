@@ -1,4 +1,5 @@
 BLOCK_SIZE = 64 # 64 bits
+KEY_SIZE = 16 # 16 bits
 ROUND_COUNT = 16 # iterated cipher 16 rounds
 
 # S-Box 4 bit
@@ -33,19 +34,19 @@ def apply_pbox(value):
         result = result | (bit << new_pos)
     return result
 
-# Rotasi binary ke kiri sebanyak shift_amount
-def circular_shift(value, shift_amount):
-    shift_amount %= 64
-    shifted =  (value << shift_amount) | (value >> (64 - shift_amount))
+# Rotasi binary ke kiri sebanyak shift_amount sebanyak 32 bit (karena setengah kiri dan kanan masing-masing 32 bit)
+def circular_shift_32(value, shift_amount):
+    shift_amount %= 32
+    shifted =  (value << shift_amount) | (value >> (32 - shift_amount))
     # Masking, karena "value << shift_amount" tidak membuang shift_amount bit terkiri
-    mask = 0xFFFFFFFFFFFFFFFF # singkatan 64 angka "1" (0b111...111) dlm binary
+    mask = 0xFFFFFFFF # singkatan 32 angka "1" (0b111...111) dlm binary
     return shifted & mask
 
 def f_function(right_half, round_key):
     ri_xor_ki = right_half ^ round_key
     substitution = apply_sbox(ri_xor_ki)
     permutation = apply_pbox(substitution)
-    result = circular_shift(permutation, 3)
+    result = circular_shift_32(permutation, 3)
     return result
 
 # Jaringan Feistel (iterated cipher 16 round)
