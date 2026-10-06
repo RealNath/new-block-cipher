@@ -67,3 +67,21 @@ def encrypt_block(block_64bit, round_keys):
     
     result = (r_i << 32) | l_i
     return result
+
+def decrypt_block(block_64bit, round_keys):
+    r_i = block_64bit >> 32
+    l_i = block_64bit & 0xFFFFFFFF # singkatan 32 angka "1" (0b111...111) dlm binary
+
+    for i in range(ROUND_COUNT - 1, -1, -1):
+        key = round_keys[i]
+        
+        # Jaringan Feistel
+        r_i_minus_1 = l_i
+            # L_i+1 = R_i XOR f(L_i, K_i)
+        l_i_minus_1 = r_i ^ f_function(l_i, key)
+        
+        r_i = r_i_minus_1
+        l_i = l_i_minus_1
+
+    result = (l_i << 32) | r_i
+    return result
