@@ -1,5 +1,5 @@
-BLOCK_SIZE = 64 # 64 bits
-KEY_SIZE = 16 # 16 bits
+BLOCK_SIZE = 8 # 64 bits (8 bytes)
+KEY_SIZE = 8 # 64 bits (8 bytes)
 ROUND_COUNT = 16 # iterated cipher 16 rounds
 
 # S-Box 4 bit
