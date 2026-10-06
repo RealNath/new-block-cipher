@@ -1,16 +1,24 @@
+BLOCK_SIZE = 64 # 64 bits
+ROUND_COUNT = 16 # iterated cipher 16 rounds
+
 # S-Box 4 bit
 SBOX = [3, 13, 10, 11, 8, 15, 4, 5,
         6, 9, 2, 7, 0, 1, 14, 12]
 
-# P-Box 64 bit
-PBOX = [16, 8, 13, 62, 15, 11, 4, 50,
-        48, 31, 35, 36, 39, 56, 49, 10,
-        47, 21, 57, 29, 6, 37, 0, 46,
-        41, 59, 7, 26, 24, 14, 2, 1,
-        33, 23, 17, 61, 19, 45, 44, 52,
-        43, 58, 30, 60, 5, 27, 34, 51,
-        63, 42, 28, 40, 22, 12, 20, 32,
-        18, 9, 53, 38, 25, 3, 55, 54]
+# P-Box 32 bit (feistel, masing-masing kiri dan kanan 32 bit)
+PBOX = [25, 31, 20, 11, 9, 4, 18, 1,
+        17, 6, 29, 16, 28, 15, 2, 0,
+        23, 13, 12, 22, 19, 24, 30, 21,
+        5, 14, 26, 27, 10, 7, 3, 8]
+
+def apply_sbox(value_32bit):
+    result = 0
+    for i in range(8):
+        # Ambil per 4 bit, dari kanan
+        chunk = (value_32bit >> (i * 4)) & 0b1111
+        substitution = SBOX[chunk]
+        result = result | (substitution << (i * 4))
+    return result
 
 # Pindahkan bit ke-i ke posisi ke-PBOX[i]
 def apply_pbox(value):
@@ -30,5 +38,31 @@ def circular_shift(value, shift_amount):
     shift_amount %= 64
     shifted =  (value << shift_amount) | (value >> (64 - shift_amount))
     # Masking, karena "value << shift_amount" tidak membuang shift_amount bit terkiri
-    mask = 0xFFFFFFFFFFFFFFFF # 64 angka "1" dlm binary
+    mask = 0xFFFFFFFFFFFFFFFF # singkatan 64 angka "1" (0b111...111) dlm binary
     return shifted & mask
+
+def f_function(right_half, round_key):
+    ri_xor_ki = right_half ^ round_key
+    substitution = apply_sbox(ri_xor_ki)
+    permutation = apply_pbox(substitution)
+    result = circular_shift(permutation, 3)
+    return result
+
+# Jaringan Feistel (iterated cipher 16 round)
+def encrypt_block(block_64bit, round_keys):
+    l_i = block_64bit >> 32
+    r_i = block_64bit & 0xFFFFFFFF # singkatan 32 angka "1" (0b111...111) dlm binary
+
+    for i in range(ROUND_COUNT):
+        key = round_keys[i]
+        
+        # Jaringan Feistel
+        l_i_plus_1 = r_i
+            # R_i+1 = L_i XOR f(R_i, K_i)
+        r_i_plus_1 = l_i ^ f_function(r_i, key)
+        
+        l_i = l_i_plus_1
+        r_i = r_i_plus_1
+    
+    result = (r_i << 32) | l_i
+    return result
