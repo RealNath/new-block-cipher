@@ -85,3 +85,20 @@ def decrypt_block(block_64bit, round_keys):
 
     result = (l_i << 32) | r_i
     return result
+
+def generate_round_keys(master_key):
+    if len(master_key) != KEY_SIZE:
+        raise ValueError(f"Master key harus berukuran {KEY_SIZE} bytes.")
+
+    w0, w1 = int.from_bytes(master_key[:4], 'big'), int.from_bytes(master_key[4:], 'big')
+    w = [w0, w1]
+
+    round_keys = []
+    GOLDEN_RATIO = 0x9E3779B9
+
+    for i in range(ROUND_COUNT):
+        round_key = (w[i % 2] + ((i + 1) * GOLDEN_RATIO)) & 0xFFFFFFFF
+        round_key = circular_shift_32(round_key, (i * 3) % 32)
+        round_keys.append(round_key)
+
+    return round_keys
