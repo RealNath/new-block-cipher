@@ -1,5 +1,6 @@
 from cipher.algorithm import NewBlockCipher
 from cipher.modes import ECBMode, CBCMode, CFBMode, OFBMode, CTRMode
+from cipher.file_cipher import FileCipher
 
 if __name__ == "__main__":
     # Penggunaan ECBMode dengan algoritma NewBlockCipher
@@ -41,9 +42,11 @@ if __name__ == "__main__":
     while True:
         menu = """
         Pilih mode operasi (ECB):
-        1. Enkripsi
-        2. Dekripsi
-        3. Keluar
+        1. Enkripsi teks
+        2. Dekripsi teks
+        3. Enkripsi file
+        4. Dekripsi file
+        5. Keluar
         """
         print(menu)
         option = input("Masukkan pilihan (1/2/3): ")
@@ -58,6 +61,24 @@ if __name__ == "__main__":
                 decrypted_text = cipher_mode.decrypt(ciphertext)
                 print("Decrypted text:", decrypted_text.decode('utf-8'))
         elif option == "3":
+                input_file_name = input("Masukkan nama file di folder files (contoh: plaintext.txt): ")
+                input_file_path = "files/" + input_file_name
+
+                output_file_name = input_file_name.split('.')[0] + "_encrypted." + input_file_name.split('.')[1]
+                output_file_path = "files/" + output_file_name
+
+                FileCipher.encrypt_file(cipher_mode, input_file_path, output_file_path)
+                print(f"File terenkripsi disimpan di: {output_file_path}")
+        elif option == "4":
+                input_file_name = input("Masukkan nama file terenkripsi di folder files (contoh: ciphertext.txt): ")
+                input_file_path = "files/" + input_file_name
+
+                output_file_name = input_file_name.split('_')[0] + "_decrypted." + input_file_name.split('.')[1]
+                output_file_path = "files/" + output_file_name
+
+                FileCipher.decrypt_file(cipher_mode, input_file_path, output_file_path)
+                print(f"File terdekripsi disimpan di: {output_file_path}")
+        elif option == "5":
                 print("Keluar dari program.")
                 break
         else:
