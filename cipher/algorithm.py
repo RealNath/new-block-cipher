@@ -87,44 +87,35 @@ def decrypt_block(block_64bit, round_keys):
     result = (l_i << 32) | r_i
     return result
 
+def generate_round_keys(master_key):
+    if len(master_key) != KEY_SIZE:
+        raise ValueError(f"Master key harus berukuran {KEY_SIZE} bytes.")
+    w0, w1 = int.from_bytes(master_key[:4], 'big'), int.from_bytes(master_key[4:], 'big')
+    w = [w0, w1]
+    round_keys = []
+    for i in range(ROUND_COUNT):
+        round_key = (w[i % 2] + ((i + 1) * GOLDEN_RATIO)) & 0xFFFFFFFF
+        round_key = circular_shift_32(round_key, (i * 3) % 32)
+        round_keys.append(round_key)
+    return round_keys
+
 class NewBlockCipher:
     def __init__(self, master_key):
-        self.key_size = KEY_SIZE
-        if len(master_key) != self.key_size:
-            raise ValueError(f"Master key harus berukuran {self.key_size} bytes.")
-        self.master_key = master_key
+        if len(master_key) != KEY_SIZE:
+            raise ValueError(f"Master key harus berukuran {KEY_SIZE} bytes.")
+        self.round_keys = generate_round_keys(master_key)
         self.block_size = BLOCK_SIZE
-        self.golden_ratio = GOLDEN_RATIO
-        self.round_count = ROUND_COUNT
-
-    def generate_round_keys(self, master_key):
-        if len(master_key) != self.key_size:
-            raise ValueError(f"Master key harus berukuran {self.key_size} bytes.")
-
-        w0, w1 = int.from_bytes(master_key[:4], 'big'), int.from_bytes(master_key[4:], 'big')
-        w = [w0, w1]
-
-        round_keys = []
-
-        for i in range(self.round_count):
-            round_key = (w[i % 2] + ((i + 1) * self.golden_ratio)) & 0xFFFFFFFF
-            round_key = circular_shift_32(round_key, (i * 3) % 32)
-            round_keys.append(round_key)
-
-        return round_keys
 
     def encrypt_block_bytes(self, block_bytes):
         if len(block_bytes) != self.block_size:
             raise ValueError(f"Block harus berukuran {self.block_size} bytes.")
         block_int = int.from_bytes(block_bytes, 'big')
-        round_keys = self.generate_round_keys(self.master_key)
-        encrypted_int = encrypt_block(block_int, round_keys)
+        encrypted_int = encrypt_block(block_int, self.round_keys)
         return encrypted_int.to_bytes(self.block_size, 'big')
 
     def decrypt_block_bytes(self, block_bytes):
         if len(block_bytes) != self.block_size:
             raise ValueError(f"Block harus berukuran {self.block_size} bytes.")
         block_int = int.from_bytes(block_bytes, 'big')
-        round_keys = self.generate_round_keys(self.master_key)
-        decrypted_int = decrypt_block(block_int, round_keys)
+        decrypted_int = decrypt_block(block_int, self.round_keys)
         return decrypted_int.to_bytes(self.block_size, 'big')
