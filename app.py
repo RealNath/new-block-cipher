@@ -20,16 +20,16 @@ if __name__ == "__main__":
         case "1":
                 cipher_mode = ECBMode(cipher)
         case "2":
-                iv = input("Masukkan IV (8 karakter): ").encode('utf-8')
+                iv = input("Masukkan initial vector (string 8 karakter): ").encode('utf-8')
                 cipher_mode = CBCMode(cipher, iv)
         case "3":
-                iv = input("Masukkan IV (8 karakter): ").encode('utf-8')
+                iv = input("Masukkan initial vector (string 8 karakter): ").encode('utf-8')
                 cipher_mode = CFBMode(cipher, iv)
         case "4":
-                iv = input("Masukkan IV (8 karakter): ").encode('utf-8')
+                iv = input("Masukkan initial vector (string 8 karakter): ").encode('utf-8')
                 cipher_mode = OFBMode(cipher, iv)
         case "5":
-                nonce = input("Masukkan nonce (4 karakter): ").encode('utf-8')
+                nonce = input("Masukkan nonce (string 4 karakter): ").encode('utf-8')
                 cipher_mode = CTRMode(cipher, nonce)
         case "6":
                 print("Keluar dari program.")
