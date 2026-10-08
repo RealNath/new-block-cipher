@@ -187,6 +187,8 @@ class CTRMode(CipherMode):
             ciphertext += encrypted_block
             self.counter += 1  # Increment counter untuk blok berikutnya
 
+        self.counter = 0  # Reset counter setelah enkripsi selesai
+
         return ciphertext
 
     def decrypt(self, ciphertext):
@@ -202,6 +204,8 @@ class CTRMode(CipherMode):
             original_block = bytes(a ^ b for a, b in zip(block, encrypted_counter))
             decrypted_data += original_block
             self.counter += 1  # Increment counter untuk blok berikutnya
+
+        self.counter = 0  # Reset counter setelah dekripsi selesai
 
         unpadded_data = PKCS7Padding.unpad(decrypted_data)
         return unpadded_data
