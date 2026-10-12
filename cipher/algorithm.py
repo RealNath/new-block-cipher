@@ -5,7 +5,7 @@ GOLDEN_RATIO = 0x9E3779B9 # golden ratio for key schedule, 32 bits (4 bytes)
 
 # S-Box 4 bit
 SBOX = [3, 13, 10, 11, 8, 15, 4, 5,
-        6, 9, 2, 7, 0, 1, 14, 12]
+        6, 14, 2, 7, 0, 1, 9, 12]
 
 # P-Box 32 bit (feistel, masing-masing kiri dan kanan 32 bit)
 PBOX = [25, 31, 20, 11, 9, 4, 18, 1,
