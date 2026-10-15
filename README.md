@@ -8,37 +8,37 @@ Implementasi algoritma cipher blok simetris berbasis Jaringan Feistel 16 putaran
 
 Program ini merupakan implementasi from scratch dari algoritma cipher blok tanpa menggunakan library kriptografi.
 
-* Ukuran Blok: 64 bit (8 byte)
-* Ukuran Kunci: 64 bit (8 byte) master key.
+* Ukuran blok: 64 bit (8 byte)
+* Ukuran kunci: 64 bit (8 byte) master key.
 * Arsitektur: Jaringan Feistel, 16 putaran.
-* Fungsi Putaran (F-function):
+* Fungsi putaran (F-function):
   1. Key Mixing: XOR dengan round key 32 bit (R_i XOR K_i).
   2. Confusion: Substitusi 8 nibble menggunakan S-Box 4-bit non-linear.
   3. Diffusion: Permutasi bit 32-bit (P-Box).
   4. Operasi Tambahan: Rotasi bit melingkar ke kiri sebesar 3 bit (circular left shift).
-* Key Schedule: Pembangkitan 16 round key (masing-masing 32 bit) dari master key 64 bit dengan golden ratio dan rotasi dinamis.
-* Mode Operasi: Mendukung 5 mode operasi standar:
+* Key schedule: Pembangkitan 16 round key (masing-masing 32 bit) dari master key 64 bit dengan golden ratio dan rotasi dinamis.
+* Mode operasi: Mendukung 5 mode operasi standar:
   * ECB (Electronic Codebook)
   * CBC (Cipher Block Chaining)
   * CFB (Cipher Feedback)
   * OFB (Output Feedback)
   * CTR (Counter Mode)
 * Padding: Skema PKCS#7 untuk penanganan data yang panjangnya bukan kelipatan ukuran blok (8 byte).
-* Fitur Tambahan: Enkripsi/dekripsi berkas sembarang (teks maupun biner/gambar) serta modul analisis statistik keamanan (Avalanche Effect, Entropi Shannon, dan Histogram Distribusi).
+* Fitur tambahan: Enkripsi/dekripsi file sembarang (teks maupun binary/gambar) serta modul analisis statistik keamanan (Avalanche Effect, Entropi Shannon, dan Histogram Distribusi).
 
 ---
 
 ## 2. Tech Stack
 
 * Python
-* CLI, terminal interaktif
+* Interface: CLI (terminal interaktif)
 * Matplotlib (visualisasi histogram)
 
 ---
 
 ## 3. Dependensi
 
-Program inti cipher blok dan seluruh mode operasinya diimplementasikan murni menggunakan library bawaan standar Python tanpa library external. Dependensi external hanya untuk visualisasi histogram:
+Program inti cipher blok dan seluruh modenya diimplementasi murni memakai library bawaan standar Python tanpa library external. Dependensi external hanya untuk visualisasi histogram:
 
 * matplotlib (visualisasi modul analisis `analysis/histogram.py`)
 
@@ -66,7 +66,7 @@ Installation dependensi: (lihat bagian 4)
     ```
 
 Alur penggunaan program:
-1. Masukkan Master Key 8 karakter (64 bit).
+1. Masukkan master key 8 karakter (64 bit).
 2. Pilih salah satu mode (ECB, CBC, CFB, OFB, CTR).
 3. Jika memilih CBC/CFB/OFB, masukkan IV (Initialization Vector) 8 karakter. Jika CTR, masukkan Nonce 4 karakter.
 4. Pilih menu operasi yang diinginkan:
@@ -80,12 +80,12 @@ Modul pengujian pada folder `analysis/` dapat dijalankan atau diimpor untuk meng
 * Pengujian Avalanche Effect:
   ```python
   from analysis.avalanche import calculate_avalanche_effect
-  # Menghitung persentase perbedaan bit antara 2 ciphertext
+  # Persentase perbedaan bit antara 2 ciphertext
   ```
 * Pengujian Entropi Shannon:
   ```python
   from analysis.entropy import calculate_entropy_in_bits_per_byte
-  # Menghitung derajat keacakan byte ciphertext (maksimal 8.0 bit/byte)
+  # Derajat ke-random-an byte ciphertext (maksimal 8.0 bit/byte)
   ```
 * Visualisasi Histogram:
   ```python
